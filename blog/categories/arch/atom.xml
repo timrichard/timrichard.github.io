@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[/Home/Tim]]></title>
-  <link href="http://timrichard.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: arch | /Home/Tim]]></title>
+  <link href="http://timrichard.github.io/blog/categories/arch/atom.xml" rel="self"/>
   <link href="http://timrichard.github.io/"/>
   <updated>2014-03-02T22:04:21+00:00</updated>
   <id>http://timrichard.github.io/</id>
