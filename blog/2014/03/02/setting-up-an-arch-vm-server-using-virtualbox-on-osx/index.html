@@ -9,7 +9,7 @@
 	<meta name="author" content="">
 
 	
-	<meta name="description" content=" Setting Up an Arch VM Server Using VirtualBox on OSX Testing the GitHub Pages deploy&hellip; ">
+	<meta name="description" content="Setting Up an Arch VM Server Using VirtualBox on OSX Objective I wrote this post as a reminder of configuration needed for a new Arch Linux guest VM &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -97,7 +97,620 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 	<h1 class="title" itemprop="name">Setting Up an Arch VM Server Using VirtualBox on OSX</h1>
-	<div class="entry-content" itemprop="articleBody"><p>Testing the GitHub Pages deploy&hellip;</p>
+	<div class="entry-content" itemprop="articleBody"><h2>Objective</h2>
+
+<p>I wrote this post as a reminder of configuration needed for a new Arch Linux guest VM, to be used as a server on a Mac OSX host.</p>
+
+<p><a href="https://www.archlinux.org/">Arch</a> is a Linux distribution that offers simplicity, flexibility, and a great package management system. Another benefit is the <a href="https://aur.archlinux.org/">Arch User Repository</a> (AUR), which provides access to a vast collection of packages that can be compiled from source and then installed using the regular package manager. This makes Arch a great choice for a Linux server guest, as there&rsquo;s a great chance that you&rsquo;ll be able to find newer software releases that you want to try out.</p>
+
+<p>As mentioned below, I&rsquo;ve cherry-picked appropriate installation steps from the <a href="https://wiki.archlinux.org/index.php/Beginners'_guide">definitive</a> installation guide, and also a sub-guide for Arch as a <a href="https://wiki.archlinux.org/index.php/VirtualBox#Arch_Linux_as_a_guest_in_a_Virtual_Machine">VM guest</a>. The objective is to establish an Arch VM that&rsquo;s useful as a server on your Mac as quickly and easily as possible.</p>
+
+<p>This post brings together some useful configuration options. These include an AUR-friendly package helper, dual NICs to serve from the guest to your host, and more.</p>
+
+<!--more-->
+
+
+<h2>VM setup</h2>
+
+<p>Begin by downloading an Arch ISO from the official <a href="https://www.archlinux.org/download/">download</a> site. You can do this using BitTorrent, or an HTTP mirror near to you. The ISO contains dual installation facilities for 32-bit architectures, and also 64-bit which will be appropriate for your Mac.</p>
+
+<h3>Default settings</h3>
+
+<p>Create a new VM in VirtualBox. In this example, I&rsquo;ve called mine &ldquo;Arch64base&rdquo;, as I intend to clone other VM&rsquo;s from it in the future. The type should be &ldquo;Linux&rdquo;, and the version should be &ldquo;Arch Linux(64 bit)&rdquo;.</p>
+
+<p>You can accept the default for memory size.</p>
+
+<p>On the next screen, accept the default of &ldquo;Create a virtual hard drive now&rdquo;, and press the &lsquo;Create&rsquo; button.</p>
+
+<p>In the next screen, you can leave the default of &ldquo;VDI&rdquo;, and press the Continue button.</p>
+
+<p>Next, leave the default of &ldquo;Dynamically allocated&rdquo;, and press the Continue button.</p>
+
+<h3>Linux guest HD size</h3>
+
+<p>The next screen allows you to choose a size for the new HD. In this case, we&rsquo;re going to alter the suggested default, and go for a size of 20GB. Note that this does not mean that 20GB will be allocated straight away on the Host hard drive. As we previously selected the &ldquo;Dynamically allocated&rdquo; option, the virtual hard drive will start out at a much smaller size and grow on demand up to the maximum that we specified.</p>
+
+<p>So here, drag the slider until <em>about</em> 20GB is selected.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/HDsize.png" alt="Selecting a different HD size" /></p>
+
+<p>This will allow a decently sized root partition for the packages you might want to install (Python, Ruby, Java, NodeJS, Go, etc) as well as room on /home for your project source files.</p>
+
+<p>Now go ahead and press the Create button.</p>
+
+<p>You should now have a suitable VM to start the installation process.</p>
+
+<p>We need to make some alterations to the default VM configuration before booting into the Arch Linux installer.</p>
+
+<p>The new VM should be already highlighted in VirtualBox. In this example, mine is called Arch64Base.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/NewVMcreated.png" alt="New VM created" /></p>
+
+<p>Now press the <strong>Settings</strong> button at the top of the window to make those alterations.</p>
+
+<h3>CPUs</h3>
+
+<p>Choose the System button, and select the Processor tab.
+You can drag the slider until &ldquo;4 CPUs&rdquo; is selected.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/4CPUs.png" alt="2 CPUs" /></p>
+
+<blockquote><p>The plan here is to have more than one CPU core available, so that it&rsquo;s possible to test any software we try that&rsquo;s capable of scaling across more than one core.</p></blockquote>
+
+<h3>Selecting the ISO to install from</h3>
+
+<p>Now, choose the Storage category at the top. We need to boot from the Arch Linux ISO to start the install process. Click on the DVD icon next to &ldquo;Empty&rdquo;, under &ldquo;Controller: IDE&rdquo;. This should reveal attributes to the right. Click on the DVD icon to the right of the dialog so that you can select the ISO to install from. Select the &ldquo;Choose&hellip;&rdquo; option, so that you can navigate to the Arch ISO image that you previously saved to your Mac.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/vboxiso.png" alt="Choose ISO image" /></p>
+
+<p>Navigate to the ISO image that you downloaded, and select it.</p>
+
+<blockquote><p>In my case it lives in my <em>Downloads</em> directory, and is called <em>archlinux-2013.06.01-dual.iso</em>.</p></blockquote>
+
+<h3>Adding a second network adapter</h3>
+
+<p>Now click on the Network category at the top of the dialog. You should see Adapter 1 already selected. It is enabled, and is set to work in NAT mode. This basically means that it will piggyback on the network connection your Mac already has, and gain connectivity that way.</p>
+
+<p>From here, select &ldquo;Adapter 2&rdquo; and then press &ldquo;Enable Network Adapter&rdquo;. In the &ldquo;Attached To&rdquo; section, select &ldquo;Host-only Adapter&rdquo;. Leave the name (vboxnet0) as default.</p>
+
+<blockquote><p>The plan here is to establish a second network adapter in our Linux guest, that is only has a connection to our host Mac. We can use it as a private testing server, without exposing it to the outside world.  The Linux VM can serve content to our Mac host via this second interface, but can still use its first (NAT) interface when it needs to access the Internet (for system updates, installing new packages, etc).</p></blockquote>
+
+<p>Your screen should now look like this :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/hostAdapter.png" alt="Second Network adapter" /></p>
+
+<h3><a name="SetupSharedFolders"></a>Shared folders</h3>
+
+<p>We should now tell VirtualBox how Shared Folders should be set up.</p>
+
+<blockquote><p>This is a useful feature that lets the Linux Guest and Mac Host share files. You will be able to save files to a directory on your Mac, and they will appear in your Linux guest in a special directory. And vice versa.</p></blockquote>
+
+<p>Using Finder, create a directory structure to hold the shared files.
+Under your home directory, you might create a directory called &ldquo;vmshare&rdquo;, and under that, a name suitable for the VM. In this case, I have created <em>vmshare/archbox</em>. We&rsquo;ll need to tell VirtualBox to map the shared folder to the directory you created shortly.</p>
+
+<p>You should have a new directory similar to this one :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/newVMshareFolder.png" alt="New directory in Finder" /></p>
+
+<p>Now select the Shared Folders button on the top. Click on the Add Shared Folder button, shown next to the pointer here :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/AddSharedFolder.png" alt="Add a share folder" /></p>
+
+<p>You now need to specify the directory that we just created. Press the dropdown button to the right of &ldquo;Folder Path&rdquo;, and navigate to the directory just created (in my example it was &ldquo;vmshare/archbox&rdquo;).</p>
+
+<p>In this case, it has automatically derived the name &lsquo;archbox&rsquo; that we can use as a symbol for this share.</p>
+
+<p>Be sure to tick the &ldquo;Auto-mount&rdquo; option, and press OK to dismiss this option box.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/SelectShare.png" alt="Selecting a VM share" /></p>
+
+<p>Now you can press &lsquo;OK&rsquo; to dismiss the main Settings dialog box. The VM is all configured.</p>
+
+<h2>Arch Linux guest installation</h2>
+
+<h3>Boot the installer</h3>
+
+<p>Now press the Start button at the top to launch our newly created VM.</p>
+
+<p>You should see the Arch install screen as shown below. If you don&rsquo;t, please review the section above about selecting the installation ISO.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/archInstallScreen.png" alt="Arch booted into install" /></p>
+
+<p>Go ahead and press Enter to boot into x86_64 mode. This is the 64bit variant that&rsquo;s appropriate for your Mac.</p>
+
+<p>After the install image has finished booting, you will be left with root access to begin the install process :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/rootInstall.png" alt="Arch installer root access" /></p>
+
+<blockquote><p>From this point, we can fast-track through the Arch installation process. This is based on the assumption that you are installing on a Mac OSX host computer that has functional Internet connectivity. Arch provides a <a href="https://wiki.archlinux.org/index.php/Beginners'_guide">definitive</a> installation guide, and a sub-guide for Arch as a <a href="https://wiki.archlinux.org/index.php/VirtualBox#Arch_Linux_as_a_guest_in_a_Virtual_Machine">VM guest</a>. However, I&rsquo;ll cherry-pick steps for this particular use case.</p></blockquote>
+
+<h3>Locale setup for the installation process</h3>
+
+<p>The Arch installer defaults to US locale for keyboard settings.
+I&rsquo;m in the UK, so I&rsquo;ll be executing the following :</p>
+
+<pre><code>loadkeys uk
+</code></pre>
+
+<p>This step should give you the correct keyboard map during the installation.</p>
+
+<blockquote><p>If you need to change locale too, please refer to <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">this</a> map and enter your equivalent in lowercase.</p></blockquote>
+
+<h3>Preparing the storage drive</h3>
+
+<blockquote><p>We are going to use the GPT (GUID Partition Table) and the Syslinux boot loader.</p></blockquote>
+
+<p>Use cgdisk to create the storage partitions :</p>
+
+<pre><code>cgdisk /dev/sda
+</code></pre>
+
+<p>You may see a warning about your partitions. If you do, press Enter to skip past it.</p>
+
+<p>You should now see this cgdisk configuration screen :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/cgdiskSetup.png" alt="cgdisk partition tool" /></p>
+
+<p>Now press &lsquo;<strong>n</strong>&rsquo; to define the first partition. When prompted for the first sector, press Enter to accept the default. For the size in sectors, enter &lsquo;<strong>8G</strong>&rsquo;.</p>
+
+<blockquote><p>Note that you enter just &lsquo;8G&rsquo;, and not &lsquo;8GB&rsquo;.</p></blockquote>
+
+<p>On the next prompt, press Enter to accept filesystem code 8300. The Ext4 filesystem is fine. Now press Enter to accept the blank partition name.</p>
+
+<p>You should see the first partition defined as follows :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/partitionOneDefined.png" alt="First partition defined" /></p>
+
+<blockquote><p>Partition number #1 is now defined, and it will occupy 8GB of space.
+This will be our Root partition. We must now define the second partition.</p></blockquote>
+
+<p>Press the <strong>down arrow</strong> key twice, and make sure that the &ldquo;free space&rdquo; item is selected. Now press &lsquo;<strong>n</strong>&rsquo; to create a new partition in the free space. Press Enter to accept the &ldquo;first sector&rdquo; default. Press enter to accept the &ldquo;size in sectors&rdquo; default. Press Enter again to accept the default type 8300 filesystem. Finally, press Enter for a fourth time to accept a blank partition name.</p>
+
+<blockquote><p>You should now have two partitions defined. The first should be 8GB, and the second 12GB.</p></blockquote>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/createdPartitions.png" alt="Finished partitions" /></p>
+
+<blockquote><p>Don&rsquo;t worry if your second partition has a slightly different size. We were shooting for approximately 20GB in total.</p></blockquote>
+
+<p>Now press <strong>w</strong> to write the changes. When prompted, you can enter <strong>yes</strong> to confirm. Now press <strong>q</strong> to quit cgdisk.</p>
+
+<h3>Create the filesystems</h3>
+
+<p>Now, execute this to create the filesystem for the root partition :</p>
+
+<pre><code>mkfs.ext4 /dev/sda1
+</code></pre>
+
+<p>And execute this to create the filesystem for the home partition :</p>
+
+<pre><code>mkfs.ext4 /dev/sda2
+</code></pre>
+
+<h3>Mount the filesystems, to write during installation</h3>
+
+<p>Mount the root partition as /mnt :</p>
+
+<pre><code>mount /dev/sda1 /mnt
+</code></pre>
+
+<p>Create a directory for the home partition, and mount as /mnt/home :</p>
+
+<pre><code>mkdir /mnt/home
+mount /dev/sda2 /mnt/home
+</code></pre>
+
+<h3>Install the base system</h3>
+
+<p>At this point, we can install the base Arch Linux system :</p>
+
+<pre><code>pacstrap -i /mnt base
+</code></pre>
+
+<p>Press Enter to accept the default of all, and Enter again to proceed with the installation. This may take a little while.</p>
+
+<h3>Generate the File System Table</h3>
+
+<p>We now need to generate the master file system table (fstab), to reflect the state of our guest Arch VM.</p>
+
+<pre><code>genfstab -U -p /mnt &gt;&gt; /mnt/etc/fstab
+</code></pre>
+
+<h3>Configure the base system</h3>
+
+<p>Now we&rsquo;ll switch into the newly installed system using chroot.</p>
+
+<pre><code>arch-chroot /mnt /bin/bash
+</code></pre>
+
+<h3>Set the locale</h3>
+
+<p>At this point, we need to edit <em>/etc/locale.gen</em> in order to define our preferred locale. You&rsquo;ll need to use your favourite editor to remove the comment character (&lsquo;#&rsquo;) from the line you want to enable.</p>
+
+<blockquote><p>If you&rsquo;re unfamiliar with Unix text editors, then <em>nano</em> would be a good choice here. You can find further guidance from <a href="http://mintaka.sdsu.edu/reu/nano.html">Nano documentation</a>. You also have <em>vi</em> available at this point.</p></blockquote>
+
+<pre><code>nano /etc/locale.gen
+</code></pre>
+
+<blockquote><p>It&rsquo;s best to uncomment the line for your locale that specifies UTF-8.
+In my case, I&rsquo;m going to remove the comment (#) from <em>en_GB.UTF-8</em></p></blockquote>
+
+<p>Please make a note of the locale you selected, as we&rsquo;ll need it again shortly.</p>
+
+<p>Now you can generate the system locale :</p>
+
+<pre><code>locale-gen
+</code></pre>
+
+<p>Now we must create <em>/etc/locale.conf</em></p>
+
+<p>Execute the following, but substitute the locale you made a note of earlier. This is mine, but substitute your locale if it&rsquo;s different :</p>
+
+<pre><code>echo LANG=en_GB.UTF-8 &gt; /etc/locale.conf
+</code></pre>
+
+<p>Export an environment variable, but again substitute your locale if different :</p>
+
+<pre><code>export LANG=en_GB.UTF-8
+</code></pre>
+
+<h3>Set your hardware clock</h3>
+
+<p>Set the hardware clock to use UTC :</p>
+
+<pre><code>hwclock --systohc --utc
+</code></pre>
+
+<h3>Choose a hostname</h3>
+
+<p>It&rsquo;s a good idea to choose a hostname for your new VM server, otherwise it will just default to &ldquo;localhost&rdquo;. I&rsquo;ve called this one &ldquo;archbox&rdquo;. Choose something similar, and set it permanently by executing :</p>
+
+<pre><code>echo yourhostname &gt; /etc/hostname
+</code></pre>
+
+<h3>Set up the network interfaces</h3>
+
+<p>First, please execute :</p>
+
+<pre><code>ip link
+</code></pre>
+
+<p>The output shows the details of the network interfaces available in the VM.</p>
+
+<p>I&rsquo;ve included a screenshot of mine below. The two interface names highlighted are important. The first one defines the NAT interface that will supply our VM with internet connectivity. The second is the host-only adapter that will serve your Mac OSX host from the guest. I&rsquo;ve highlighted the interface IDs in my screenshot below. Please make a note of the ones on your system, as we&rsquo;ll need those names shortly.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/2networkInterfaces.png" alt="Two network interfaces" /></p>
+
+<blockquote><p>I&rsquo;ve made a note of enp0s3, enp0s8. Please make a note of yours if they are different.</p></blockquote>
+
+<p>Let&rsquo;s move to the netctl directory</p>
+
+<pre><code>cd /etc/netctl
+</code></pre>
+
+<p>We&rsquo;ll copy over two network profiles from the <em>/examples</em> directory, which we can use as templates for configuring our two network interfaces.</p>
+
+<pre><code>cp examples/ethernet-dhcp .
+cp examples/ethernet-static .
+</code></pre>
+
+<p>We now have two suitable netctl profiles to edit.</p>
+
+<p>Edit ethernet-dhcp, and replace &lsquo;eth0&rsquo; with the <strong>first</strong> network ID you made a note of.</p>
+
+<pre><code>nano ethernet-dhcp
+</code></pre>
+
+<p>In my case, the ethernet-dhcp file now looks like the screenshot below. You can see the network name highlighted.</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/ethDhcpNat.png" alt="First network interface - NAT" /></p>
+
+<p>Now we need to edit the second configuration file.</p>
+
+<pre><code>nano ethernet-static
+</code></pre>
+
+<p>In this case, you will need to replace &lsquo;eth0&rsquo; with the <strong>second</strong> network ID that you made a note of. In my case, that will be <strong>enp0s8</strong>.</p>
+
+<p>Also, change the Address line to show <strong>Address=(&lsquo;192.168.56.56/24&rsquo;)</strong></p>
+
+<blockquote><p>192.168.56.56 is the static IP that your Arch Linux VM will always respond on.</p></blockquote>
+
+<p>Then, change the DNS line to show <strong>DNS=(&lsquo;8.8.8.8&rsquo;)</strong></p>
+
+<p>Also, comment out the Gateway= line. Push a hash/pound character before it.</p>
+
+<p>My ethernet-static file now looks like this (changes highlighted) :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/ethStaticHost.png" alt="Second network interface - Host only" /></p>
+
+<p>Now, we just need to enable the two new network profiles :</p>
+
+<pre><code>netctl enable ethernet-dhcp
+netctl enable ethernet-static
+</code></pre>
+
+<p>Each time, don&rsquo;t worry about the message that says &ldquo;Running in chroot, ignoring request&rdquo;.</p>
+
+<h3>Set up a root password</h3>
+
+<p>You&rsquo;re configuring the Arch system as the root user, and need to supply a suitable password for future use. Execute this :</p>
+
+<pre><code>passwd
+</code></pre>
+
+<p>You&rsquo;ll be prompted to enter a suitable password, and once again to confirm.</p>
+
+<h3>Set up the bootloader</h3>
+
+<p>We&rsquo;ll be using Syslinux here. As we used GPT for the partition earlier, execute :</p>
+
+<pre><code>pacman -S gptfdisk
+</code></pre>
+
+<p>Install and configure Syslinux :</p>
+
+<pre><code>pacman -S syslinux
+syslinux-install_update -i -a -m
+</code></pre>
+
+<p>We&rsquo;re almost set for Syslinux to boot our new system, but some of the installed defaults aren&rsquo;t quite right. Our root partition is on /dev/sda1, and the Syslinux configuration needs to reflect that. Edit /boot/syslinux/syslinux.cfg</p>
+
+<pre><code>nano /boot/syslinux/syslinux.cfg
+</code></pre>
+
+<p>You need to locate the two Arch labels (arch, archfallback) and switch their partition assignments from <em>sda3</em> to <em>sda1</em>.</p>
+
+<p>I&rsquo;ve highlighted where I&rsquo;ve made the switch on my VM :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/syslinuxconf.png" alt="Syslinux configuration" /></p>
+
+<h3>Prepare for reboot</h3>
+
+<p>Exit the chroot environment :</p>
+
+<pre><code>exit
+</code></pre>
+
+<p>Unmount the partitions under /mnt :</p>
+
+<pre><code>umount -R /mnt
+</code></pre>
+
+<p>Remove the ISO image from the VirtualBox drive.
+To do this, switch back to the VirtualBox Manager. Make sure your VM is highlighted, and then click on the Settings button at the top.
+Under the Storage tab, highlight the archlinux ISO that is under &ldquo;Controller: IDE&rdquo;. Click the DVD icon to the right, and choose &ldquo;Remove disk from virtual drive&rdquo; :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/removeDiskVirtualDrive.png" alt="Remove disk from virtual drive" /></p>
+
+<p>Now switch back to your Arch VM, and instruct it to reboot :</p>
+
+<pre><code>reboot
+</code></pre>
+
+<h3>Boot into your new VM</h3>
+
+<p>When the VM has finished booting, you need to log in.
+Do this as root, with the root password you chose earlier.</p>
+
+<h3>Install essential packages</h3>
+
+<p>As this will be a developer&rsquo;s VM, there are base build tools that will be useful to you.</p>
+
+<p>Execute the following :</p>
+
+<pre><code>pacman -S base-devel
+</code></pre>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/pacmanBaseDevel.png" alt="Installing base-devel" /></p>
+
+<p>Press Enter <strong>twice</strong> to accept defaults, and install.</p>
+
+<h3>Add yourself as a user</h3>
+
+<p>Execute the following, and insert your name instead of &lsquo;yourname&rsquo; :</p>
+
+<pre><code>useradd -m -s /bin/bash yourname
+</code></pre>
+
+<p>Now add a password for that user account you created :</p>
+
+<pre><code>passwd yourname
+</code></pre>
+
+<h3>Setting up sudo</h3>
+
+<p>It&rsquo;s now time to configure sudo, which is a utility to let you run commands as another user (most typically root). You&rsquo;ll be using this fairly regularly, so we&rsquo;ll make it easy.</p>
+
+<p>Execute the following :</p>
+
+<pre><code>usermod -g wheel yourname
+</code></pre>
+
+<p>&hellip; where of course you substitute your name for &lsquo;your name&rsquo;.</p>
+
+<p>This will add your regular user account (that you created in the steps above) to the group &lsquo;wheel&rsquo;. We&rsquo;ll tell Sudo via configuration that anyone in that group can use sudo to execute root commands without having to enter a password.</p>
+
+<p>We need to alter the Sudo configuration now. It isn&rsquo;t meant to be modified manually, so we&rsquo;ll use a tool called <em>visudo</em> to accomplish this.</p>
+
+<blockquote><p>If you&rsquo;re familiar with <em>vi</em>, and have been using it through these steps, then you&rsquo;ll be able to use <em>visudo</em> directly. It will open up the Sudo configuration in <em>vi</em> directly. If you&rsquo;ve been using <em>nano</em> instead, then you can execute a slightly different command to edit the configuration file using <em>nano</em>.</p></blockquote>
+
+<p>To edit the Sudo configuration in nano, execute :</p>
+
+<pre><code>EDITOR=nano visudo
+</code></pre>
+
+<p><strong>Alternatively</strong>, execute this instead to edit with <em>vi</em> :</p>
+
+<pre><code>visudo
+</code></pre>
+
+<p>Locate this line, and remove the leading <strong># and space</strong> before &ldquo;%wheel&rdquo; :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/visudo.png" alt="Sudo config for wheel" /></p>
+
+<p>So now you have this :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/visudo_ok.png" alt="Correct sudo configuration" /></p>
+
+<p>That&rsquo;s all complete. From this point, you&rsquo;ll be able to use sudo without any password from your regular user account.</p>
+
+<h3>Setting up yaourt, a meta package manager</h3>
+
+<p>Yaourt is a wrapper around the system&rsquo;s package manager &ndash; Pacman. It&rsquo;s a really great way of opening up the AUR to your Arch server, which will give you access to newer and lesser known packages. Yaourt makes it easy to search the AUR, and will automatically install any packages you select. This might involve a prebuilt binary, or the tool may checkout source from a Git repo and compile it on your machine. You don&rsquo;t have to worry, as Yaourt will take care of the process, generating a package that can be installed and later removed just like any other.</p>
+
+<p>Yaourt isn&rsquo;t available through the regular Arch repositories, so it can&rsquo;t be installed directly through Pacman. The easiest way to get it installed on your system is to include the Yaourt project repo to your list of repos, and let Pacman find it that way.</p>
+
+<p>Using either <em>nano</em> or <em>vi</em>, please edit <em>/etc/pacman.conf</em></p>
+
+<p>At the very end of the file, add these three lines :</p>
+
+<pre><code>[archlinuxfr]
+SigLevel = Never
+Server = http://repo.archlinux.fr/$arch
+</code></pre>
+
+<p>Save and close the file.</p>
+
+<p>Now execute this to install yaourt :</p>
+
+<pre><code>pacman -Sy yaourt
+</code></pre>
+
+<p>Press <strong>y</strong> when prompted to proceed with the installation.</p>
+
+<p>You should now have yaourt installed.</p>
+
+<blockquote><p>Please note that it&rsquo;s best practice to run <em>yaourt</em> under your regular user account, rather than the root account that you&rsquo;re currently using for system configuration.</p></blockquote>
+
+<p>As an example, we could use yaourt to search for CasperJS (which is a scripting environment for the headless PhantomJS WebKit browser) :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/yaourt1.png" alt="Yaourt search for CasperJS" /></p>
+
+<p>Alternatively, we could search for a Load Balancer and receive a number of choices (including HAProxy) :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/yaourt2.png" alt="Yaourt search for a load balancer" /></p>
+
+<h2>VirtualBox guest additions</h2>
+
+<p>Now we can install the VirtualBox Guest Additions. This package consists of drivers and utilities to optimise our Arch installation for life within a VirtualBox VM. Many of the <a href="https://www.virtualbox.org/manual/ch04.html">features</a> aren&rsquo;t really applicable to our console-driven server VM. However, we get benefits like Shared Folders, which will make it easy to swap files between our Mac host and the Linux VM guest.</p>
+
+<blockquote><p>Many sources refer to the Guest Additions disk image that you can mount as an installation source. Fortunately, we can use a repository to automatically install the additions for us. Another bonus is that the Guest Additions package receives updates, so our upgrade path is pretty seamless when Arch wants to install a new kernel via system updates.</p></blockquote>
+
+<p>Let&rsquo;s start by installing the Guest Additions package.</p>
+
+<pre><code>pacman -S virtualbox-guest-utils
+</code></pre>
+
+<p>A large number of packages will be marked for download.
+Enter <strong>y</strong>, and continue with the installation.</p>
+
+<p>We can test out the new kernel modules. Execute this :</p>
+
+<pre><code>modprobe -a vboxguest vboxsf vboxvideo
+</code></pre>
+
+<p>Several kernel modules will have been installed. We need to make sure they are available each time we boot the VM.</p>
+
+<p>Create <em>/etc/modules-load.d/virtualbox.conf</em> using your preferred editor.</p>
+
+<p>In the new file, add these three lines :</p>
+
+<pre><code>vboxguest
+vboxsf
+vboxvideo
+</code></pre>
+
+<p>Make sure that your user account is part of the group that grants access to Guest Additions features. Execute this, swapping &lsquo;yourname&rsquo; for the name of the user account you created for yourself :</p>
+
+<pre><code>gpasswd -a yourname vboxsf
+</code></pre>
+
+<p>Enable the Guest Additions services by executing this :</p>
+
+<pre><code>VBoxClient-all
+</code></pre>
+
+<p>&hellip;and start the services automatically on boot. Execute this :</p>
+
+<pre><code>systemctl enable vboxservice
+</code></pre>
+
+<p>Now let&rsquo;s test those Guest Additions kernel modules by rebooting.</p>
+
+<p>Execute this :</p>
+
+<pre><code>reboot
+</code></pre>
+
+<p>At this point, it&rsquo;s a good time to test out that user account that you created earlier.</p>
+
+<p>When the VM wants you to login, enter the username and password that you chose (not the Root account we have been using up until now).</p>
+
+<p>Make sure your user account can reach the automounted shared folder directory. Execute the following :</p>
+
+<pre><code>sudo chmod o+rx /media
+</code></pre>
+
+<blockquote><p>I&rsquo;m not entirely sure why this is necessary, but it seems that the /media directory doesn&rsquo;t have the correct permissions to allow non-privileged accounts to reach the mounted directories beneath. I think this may be a bug in the current Arch/VirtualBox configuration.</p></blockquote>
+
+<p>Now we can test out the shared folder.</p>
+
+<blockquote><p>You&rsquo;ll now need that hostname that you set earlier. Luckily, it&rsquo;s easy to spot. It should be right there in your command prompt. The VirtualBox service automatically mounts the shared folder under <em>/media</em>, using the hostname you chose prepended with &ldquo;sf_&rdquo;. So in my case here, the shared folder is called <em>/media/sf_archbox</em></p></blockquote>
+
+<p>Edit a new file in your shared folder using <em>nano</em> or <em>vi</em>, substituting your folder name for &lsquo;your folder&rsquo; :</p>
+
+<pre><code>nano /media/sf_yourfolder/testing.txt
+</code></pre>
+
+<p>Add some sample text. You should be able to navigate to that file in the Mac directory that you <a href="#SetupSharedFolders">chose earlier</a>, and see the text that you just entered.</p>
+
+<h2>Testing with NodeJS</h2>
+
+<p>The VM is now ready to be used as a very versatile server.</p>
+
+<p>Let&rsquo;s test the setup by creating a simple NodeJS server to respond to web requests. In fact, it&rsquo;s the short example code given on the NodeJS homepage.</p>
+
+<p>First, let&rsquo;s install NodeJS. It&rsquo;s a package in the Community repository, so we don&rsquo;t have to find and build it using Yaourt :</p>
+
+<pre><code>sudo pacman -S nodejs
+</code></pre>
+
+<p>Switch to your home directory, and create a file called <em>app.js</em>. It should contain these lines :</p>
+
+<pre><code>var http = require('http');
+http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('Hello from our Arch guest!\n');
+}).listen(8080, '192.168.56.56');
+console.log('Server running at http://192.168.56.56:8080/');
+</code></pre>
+
+<blockquote><p>The important thing to note in this code fragment is that we&rsquo;ve bound to the static IP address that the host can reach us on (192.168.56.56), rather than &lsquo;localhost&rsquo; or &lsquo;127.0.0.1&rsquo;.</p></blockquote>
+
+<p>When you&rsquo;ve saved this file, you can run it by executing :</p>
+
+<pre><code>node app.js
+</code></pre>
+
+<p>The server should respond with :</p>
+
+<pre><code>Server running at http://192.168.56.56:8080/
+</code></pre>
+
+<p>Try accessing that address in a browser on your Mac, to make sure it is all working :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/testingServerOnHost.png" alt="Host browser accessing Guest VM" /></p>
+
+<h2>Wrap up</h2>
+
+<p>I hope the VM is useful, and you find a lot of great packages to experiment with.</p>
+
+<p>It&rsquo;s a good idea to update your Arch system fairly regularly. You can achieve this through the Yaourt wrapper :</p>
+
+<pre><code>yaourt -Syu --aur
+</code></pre>
+
+<p>&hellip; which has the benefit of updating any packages that you&rsquo;ve acquired through the AUR at the same time. It&rsquo;s not unusual for changes to require some maintenance on your part. There&rsquo;s normally plenty of notice on the <a href="https://www.archlinux.org/">home page</a> when this happens. Also, the benefit of a VM approach is that you can set snapshots whenever you want, and revert to them if anything goes wrong with your installation.</p>
 </div>
 
 </article>
