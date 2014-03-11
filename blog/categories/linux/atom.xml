@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | /Home/Tim]]></title>
   <link href="http://timrichard.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://timrichard.github.io/"/>
-  <updated>2014-03-10T21:49:23+00:00</updated>
+  <updated>2014-03-11T15:39:44+00:00</updated>
   <id>http://timrichard.github.io/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -397,20 +397,20 @@ syslinux-install_update -i -a -m
 <pre><code>umount -R /mnt
 </code></pre>
 
-<p>Remove the ISO image from the VirtualBox drive.
+<p>Shut down the Arch VM :</p>
+
+<pre><code>shutdown -h now
+</code></pre>
+
+<p>Remove the ISO image from the VirtualBox drive. This is so we don&rsquo;t boot into the installer again when we restart.
 To do this, switch back to the VirtualBox Manager. Make sure your VM is highlighted, and then click on the Settings button at the top.
 Under the Storage tab, highlight the archlinux ISO that is under &ldquo;Controller: IDE&rdquo;. Click the DVD icon to the right, and choose &ldquo;Remove disk from virtual drive&rdquo; :</p>
 
 <p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/removeDiskVirtualDrive.png" alt="Remove disk from virtual drive" /></p>
 
-<p>Now switch back to your Arch VM, and instruct it to reboot :</p>
-
-<pre><code>reboot
-</code></pre>
-
 <h3>Boot into your new VM</h3>
 
-<p>When the VM has finished booting, you need to log in.
+<p>Start your new VM from the VirtualBox manager. When it has finished booting, you need to log in.
 Do this as root, with the root password you chose earlier.</p>
 
 <h3>Install essential packages</h3>
