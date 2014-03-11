@@ -358,19 +358,20 @@ Unmount the partitions under /mnt :
 
     umount -R /mnt
     
-Remove the ISO image from the VirtualBox drive.
+Shut down the Arch VM :
+
+    shutdown -h now
+    
+Remove the ISO image from the VirtualBox drive. This is so we don't boot into the installer again when we restart.
 To do this, switch back to the VirtualBox Manager. Make sure your VM is highlighted, and then click on the Settings button at the top.
 Under the Storage tab, highlight the archlinux ISO that is under "Controller: IDE". Click the DVD icon to the right, and choose "Remove disk from virtual drive" :
 
 ![Remove disk from virtual drive](https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-02/removeDiskVirtualDrive.png)
 
-Now switch back to your Arch VM, and instruct it to reboot :
-
-    reboot
 
 ### Boot into your new VM
 
-When the VM has finished booting, you need to log in.
+Start your new VM from the VirtualBox manager. When it has finished booting, you need to log in.
 Do this as root, with the root password you chose earlier.
 
 ### Install essential packages
