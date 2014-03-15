@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: nodejs | /Home/Tim]]></title>
+  <link href="http://timrichard.github.io/blog/categories/nodejs/atom.xml" rel="self"/>
+  <link href="http://timrichard.github.io/"/>
+  <updated>2014-03-15T18:05:23+00:00</updated>
+  <id>http://timrichard.github.io/</id>
+  <author>
+    <name><![CDATA[]]></name>
+    <email><![CDATA[tim.richard@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Node &amp; NPM version management, and sudo free global packages]]></title>
+    <link href="http://timrichard.github.io/blog/2014/03/15/node-and-npm-version-management-and-sudo-free-global-packages/"/>
+    <updated>2014-03-15T16:19:28+00:00</updated>
+    <id>http://timrichard.github.io/blog/2014/03/15/node-and-npm-version-management-and-sudo-free-global-packages</id>
+    <content type="html"><![CDATA[<p>I wrote this post as a reminder of two good configuration  ideas when using NodeJS and NPM.</p>
+
+<h2>Using NVM to manage Node versions</h2>
+
+<p><a href="https://github.com/creationix/nvm">Node Version Manager</a> is a great script that makes it easy to manage Node/NPM versions. NVM prepends to your path, which results in you executing the version of NodeJS/NPM that NVM is currently managing.</p>
+
+<p>This can be useful if you are using packages from NPM that don&rsquo;t work yet with certain versions of NodeJS. You could perhaps lock down your version of NodeJS and the packages you depend on, and then later increment in a controlled way in  a testing environment to make sure everything still works.</p>
+
+<h3>Prerequisites</h3>
+
+<p>If you&rsquo;re an OSX user, the <a href="https://github.com/creationix/nvm">documentation</a> suggests that you need XCode installed to make use of the C++ compiler.</p>
+
+<p>You can download the command line tools from the XCode GUI, or through the following line :</p>
+
+<pre><code>xcode-select --installed
+</code></pre>
+
+<p>Also, Git needs to be installed on your system.</p>
+
+<h3>Installation</h3>
+
+<p>To paraphrase the <a href="https://github.com/creationix/nvm">homepage</a>, installation is very easy :</p>
+
+<pre><code>curl https://raw.github.com/creationix/nvm/master/install.sh | sh
+</code></pre>
+
+<p>This installation will append a line to your shell profile to execute nvm.sh, which will now exist in your <em>.nvm</em> directory.</p>
+
+<blockquote><p>Although the documentation mentions this install method will append to your .bash_profile and .profile dotfiles, the source code of the installer suggests it will also append the line to <em>.zshrc</em> if you&rsquo;re a <em>zsh</em> user.</p></blockquote>
+
+<h3>Features</h3>
+
+<p>I&rsquo;ll link to the <a href="https://github.com/creationix/nvm">homepage</a> rather than simply copying the usage documentation here, but NVM offers a number of really useful options.</p>
+
+<p>You can execute <strong>nvm ls-remote</strong> to see which versions of NodeJS are available to you. <strong>nvm install</strong> allows you to download a particular version of NodeJS to be stored locally for future use. <strong>nvm ls</strong> will show you the versions that you have installed locally, and you can <strong>nvm use</strong> any of them whenever you want. You have options to make a particular version your default for your environment, and can also script project-level configuration dotfiles to specify particular NodeJS versions for different projects.</p>
+
+<p>Executing <em>which</em> on my local installation, we can see that the NVM versions are in use :</p>
+
+<p><img src="https://googledrive.com/host/0B_Aq_PyDmRw1OVhUMHpybGg5aGc/Blog/2014-03-15/whichNodeNPM.png" alt="NVM controlling NodeJS and NPM versions" /></p>
+
+<p>NVM offers flexibility over the official NodeJS installer, which operates system-wide. The per-user profile and path approach makes it a non-destructive way to swap versions easily.</p>
+
+<h2>Global NPM packages without Sudo installation</h2>
+
+<p>Some NPM packages recommend global installation (using <em>npm -g</em>. This allows packages to executed as commands from any location on your system. For instance, <em>Express</em> is used in this way to generate Web framework scaffolding into any location you choose.</p>
+
+<p>Executing an install with the global option often fails because the non-privileged user doesn&rsquo;t have write access to the destination (such as <em>/usr/local</em>). One approach is to re-execute the install command using <em>sudo</em>. NPM even suggests this in the errors that are thrown.</p>
+
+<p>Some people reject this as a security concern, as you would be granting root access to any scripts coming down from the package manager. Another <a href="http://howtonode.org/introduction-to-npm">approach</a> would be to make your user account the owner of the <em>/usr/local</em> and any subdirectories. This may raise other concerns, as your OS might be expecting that directory to remain under root ownership.</p>
+
+<p>A number of solutions are posted <a href="https://gist.github.com/isaacs/579814">here</a>. I like the last one, as it takes a simple non-destructive approach similar to the NVM installation earlier in this post.</p>
+
+<p>Edit your <em>~/.npmrc</em>, and make sure this line is present :</p>
+
+<pre><code>prefix = ~/local
+</code></pre>
+
+<p>Also make sure that <em>~/local/bin</em> is on your path, by including this line in your shell profile dotfile :</p>
+
+<pre><code>export PATH=$HOME/local/bin:$PATH
+</code></pre>
+
+<p>At this point you can <em>source</em> your changed file, or perhaps restart the terminal session for the changes to take effect.</p>
+
+<p>You should now be able to install packages globally without sudo, for example :</p>
+
+<pre><code>npm install -g express
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
